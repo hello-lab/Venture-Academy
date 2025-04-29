@@ -100,7 +100,7 @@ export default function Home() {
         
       </div>
       < div className="sm:hidden"> 
-    { showStartScreen?   <div className="flex flex-col items-center justify-center rounded-xl p-10 bg-gradient-to-br from-green-100 via-green-150 to-green-400">
+    { showStartScreen?   <div className="flex flex-col items-center justify-center rounded-xl p-8 bg-gradient-to-br from-green-100 via-green-150 to-green-400">
   <h1 className="text-5xl font-bold text-gray-800 drop-shadow-lg mb-6">
     Breathing Exercise
   </h1>
