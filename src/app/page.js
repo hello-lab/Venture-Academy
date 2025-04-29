@@ -1,103 +1,151 @@
+"use client";
 import Image from "next/image";
-
+import { useEffect, useState,useRef } from "react";
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [showStartScreen, setShowStartScreen] = useState(true);
+  const [phase, setPhase] = useState("Inhale");
+  const [size, setSize] = useState("w-32 h-32");
+  const [timeLeft, setTimeLeft] = useState(4);
+  const [isRunning, setIsRunning] = useState(false);
+  const timeoutRef = useRef(null);
+  const intervalRef = useRef(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+  const phases = [
+    { name: "Inhale", duration: 4, size: "w-64 h-64" },
+    { name: "Hold", duration: 3, size: "w-64 h-64" },
+    { name: "Exhale", duration: 4, size: "w-32 h-32" },
+    { name: "Hold", duration: 3, size: "w-32 h-32" },
+  ];
+
+  const currentIndexRef = useRef(0);
+
+  const startPhase = () => {
+    const currentPhase = phases[currentIndexRef.current];
+    setPhase(currentPhase.name);
+    setSize(currentPhase.size);
+    setTimeLeft(currentPhase.duration);
+
+    if (navigator.vibrate) navigator.vibrate(100);
+
+    intervalRef.current = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+
+    timeoutRef.current = setTimeout(() => {
+      clearInterval(intervalRef.current);
+      currentIndexRef.current =
+        (currentIndexRef.current + 1) % phases.length;
+      startPhase();
+    }, currentPhase.duration * 1000);
+  };
+
+  const startExercise = () => {
+    if (!isRunning) {
+      setIsRunning(true);
+      startPhase();
+    }
+  };
+
+  const pauseExercise = () => {
+    clearTimeout(timeoutRef.current);
+    clearInterval(intervalRef.current);
+    setIsRunning(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timeoutRef.current);
+      clearInterval(intervalRef.current);
+    };
+  }, []);
+
+
+  return (
+    
+    <div
+    
+    className="relative z-10 min-h-screen w-full p-5 snap-start"
+  >
+    <video
+      autoPlay
+      loop
+      muted
+      className="absolute inset-0 w-full h-full object-cover z-0"
+    >
+      <source src="/video.mp4" type="video/mp4" />
+    </video>
+
+    <main className="flex flex-col gap-[32px] items-center sm:items-start relative z-10">
+      <Image
+        className="rounded-xl"
+        src="/logo.png"
+        alt="Next.js logo"
+        width={380}
+        height={68}
+        priority
+      />
+      <div>
+        <h1
+          style={{ fontSize: "8vw", flexWrap: "wrap", display: "flex" }}
+          className=" font-bold text-center flex-col flex;"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          Welcome to{" "}
+          <span style={{ textAlign: "center", color: "rgb(85, 85, 85)" }}>
+            {" "}
+            &nbsp;Venture Academy{" "}
+
+        
+          </span>
+        </h1>
+        
+      </div>
+      < div className="sm:hidden"> 
+    { showStartScreen?   <div className="flex flex-col items-center justify-center rounded-xl p-10 bg-gradient-to-br from-green-100 via-green-150 to-green-400">
+  <h1 className="text-5xl font-bold text-gray-800 drop-shadow-lg mb-6">
+    Breathing Exercise
+  </h1>
+  <p className="text-lg text-gray-700 mb-8 text-center max-w-md">
+    Take a moment for yourself. Tap below to begin a guided breathing exercise and reset your mind.
+  </p>
+  <button
+    onClick={() => setShowStartScreen(false)}
+    className="px-6 py-3 bg-yellow-500 text-white rounded-2xl shadow-lg text-lg font-medium hover:bg-blue-700 transition"
+  >
+    Begin Exercise
+  </button>
+</div>:
+  <div className="flex flex-col items-center justify-center p-16 rounded-xl bg-gradient-to-br from-green-200 via-green-300 to-green-400">
+  <div
+    className={`rounded-full bg-gradient-to-r from-green-600 to-green-700 shadow-2xl transition-all duration-4000 linear ${size}
+    flex items-center justify-center ${isRunning ? "animate-pulse" : ""}`}
+  >
+    <span className="text-white text-4xl font-semibold">{timeLeft}</span>
+  </div>
+
+  <h1 className="text-5xl font-bold text-gray-800 mt-10 drop-shadow-lg">
+    {phase}
+  </h1>
+  <p className="text-gray-600 mt-4">Focus on your breath </p>
+
+  <div className="mt-10 flex gap-4">
+    {!isRunning ? (
+      <button
+        onClick={startExercise}
+        className="px-6 py-3 bg-green-500 text-white rounded-2xl shadow-lg text-lg font-medium hover:bg-green-600 transition"
+      >
+        Start
+      </button>
+    ) : (
+      <button
+        onClick={pauseExercise}
+        className="px-6 py-3 bg-red-500 text-white rounded-2xl shadow-lg text-lg font-medium hover:bg-red-600 transition"
+      >
+        Pause
+      </button>
+    )}
+  </div>
+</div>}</div>
+    </main>
+  </div>
   );
 }
