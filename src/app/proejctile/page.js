@@ -11,7 +11,7 @@ export default function GlobeDemo() {
     pointSize: 4,
     globeColor: "#062056",
     showAtmosphere: true,
-  //  atmosphereColor: "#FFFFFF",
+    atmosphereColor: "#FFFFFF",
     atmosphereAltitude: 0.1,
     emissive: "#062056",
     emissiveIntensity: 0.1,
@@ -391,11 +391,11 @@ export default function GlobeDemo() {
       arcAlt: 0.3,
       color: colors[Math.floor(Math.random() * (colors.length - 1))],
     },
-  ]
+  ];
 
   return (
-    <div className="flex flex-row items-center justify-center py-20 h-screen  dark:bg-black bg-white relative w-full">
-      <div className="max-w-7xl mx-auto w-full relative overflow-hidden h-full md:h-[40rem] px-4">
+    <div className="flex flex-row items-center justify-center py-20 relative h-screen w-full z-15 absolute">
+      <div className="max-w-7xl mx-auto  relative overflow-hidden w-[100vw] h-[100vw] md:h-[100vh] px-4">
         <motion.div
           initial={{
             opacity: 0,

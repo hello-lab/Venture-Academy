@@ -1,8 +1,28 @@
+"use client";
 import Image from "next/image";
-
+import { useEffect, useState } from "react";
+import Spinner from "../../lib/loading";
 export default function Home() {
+    const [isFullyLoaded, setIsFullyLoaded] = useState(false);  
+    const [isiFullyLoaded, setIsiFullyLoaded] = useState(true);  
+
+    const handleIframeLoad = () => {
+     console.log("Iframe loaded");
+    };
+    
+    useEffect(() => {
+      // Check if already loaded (could happen on fast connections)
+      if (document.readyState === "complete") {
+        setIsFullyLoaded(true);
+      } else {
+        window.addEventListener("load", () => {
+          setIsFullyLoaded(true);
+        });
+      }
+    }, []);
+  
   return (
- 
+    <> {!isFullyLoaded?<Spinner/>:
           <div
           
             className="relative z-10 min-h-screen w-full p-5 snap-start"
@@ -29,10 +49,14 @@ export default function Home() {
 
     width: '100dvw',
     flexDirection: 'column',
+    alignItems: 'center',
     height: '80vh'}}>
-              <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScALwNsr5dg6mRODnZWFgaIb4lyHgcVYzxzZDkshqmc9Sudqw/viewform?embedded=true" style={{ width: 'fitContent', height: '100%' }} frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+      
+      {isiFullyLoaded?
+              <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScKfzG5H3ELs92dTENekI27oXW-UcUTKkjYNhdCgZdQG-PEDA/viewform?embedded=true" onLoad={()=>console.log(true)} style={{ backgroundColor:'rgba(80, 60, 45, 0.52)',    borderRadius: '20px', width: '80dvw', height: '100%' }} frameborder="1" marginheight="1" marginwidth="1">Loading…</iframe>:
+              <Spinner/>}
               </div>
             </main>
-          </div>
+          </div>}</>
   );
 }

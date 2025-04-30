@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState,useRef } from "react";
+import Spinner from "./lib/loading";
 export default function Home() {
   const [showStartScreen, setShowStartScreen] = useState(true);
   const [phase, setPhase] = useState("Inhale");
@@ -9,6 +10,19 @@ export default function Home() {
   const [isRunning, setIsRunning] = useState(false);
   const timeoutRef = useRef(null);
   const intervalRef = useRef(null);
+  const [isFullyLoaded, setIsFullyLoaded] = useState(false);
+
+  useEffect(() => {
+    // Check if already loaded (could happen on fast connections)
+    if (document.readyState === "complete") {
+      setIsFullyLoaded(true);
+    } else {
+      window.addEventListener("load", () => {
+        setIsFullyLoaded(true);
+      });
+    }
+  }, []);
+
 
   const phases = [
     { name: "Inhale", duration: 4, size: "w-64 h-64" },
@@ -60,9 +74,8 @@ export default function Home() {
   }, []);
 
 
-  return (
-    
-    <div
+  return (<> {isFullyLoaded?
+  <div
     
     className="relative z-10 min-h-screen w-full p-5 snap-start"
   >
@@ -100,11 +113,11 @@ export default function Home() {
         
       </div>
       < div className="sm:hidden"> 
-    { showStartScreen?   <div className="flex flex-col items-center justify-center rounded-xl p-8 bg-gradient-to-br from-green-100 via-green-150 to-green-400">
-  <h1 className="text-5xl font-bold text-gray-800 drop-shadow-lg mb-6">
+    { showStartScreen?   <div className="flex flex-col items-center justify-center rounded-xl p-3 bg-gradient-to-br from-green-100 via-green-150 to-green-400">
+  <h1 className="text-xl font-bold text-gray-800 drop-shadow-lg mb-6">
     Breathing Exercise
   </h1>
-  <p className="text-lg text-gray-700 mb-8 text-center max-w-md">
+  <p className=" text-gray-700 mb-8 text-center max-w-md">
     Take a moment for yourself. Tap below to begin a guided breathing exercise and reset your mind.
   </p>
   <button
@@ -146,6 +159,6 @@ export default function Home() {
   </div>
 </div>}</div>
     </main>
-  </div>
+  </div>:<Spinner/>}</>
   );
 }

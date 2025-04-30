@@ -1,8 +1,22 @@
 'use client';
 import Image from "next/image";
-
+import { useEffect, useState } from "react";
+import Spinner from "../lib/loading";
 export default function Home() {
+    const [isFullyLoaded, setIsFullyLoaded] = useState(false);  
+    useEffect(() => {
+      // Check if already loaded (could happen on fast connections)
+      if (document.readyState === "complete") {
+        setIsFullyLoaded(true);
+      } else {
+        window.addEventListener("load", () => {
+          setIsFullyLoaded(true);
+        });
+      }
+    }, []);
+  
   return (
+    <> {!isFullyLoaded?<Spinner/>:
     <div className="relative z-10 min-h-screen w-full p-5 snap-start overflow-hidden">
       <video
         autoPlay
@@ -46,8 +60,9 @@ export default function Home() {
             <button  onClick={() => {
           
           window.location.href = "/signup/form";
-        }} className="bg-white hover:bg-white/20 transition-all duration-300 backdrop-blur-md rounded-lg p-3 flex items-center gap-2 w-[90%]">
+        }} className="bg-white hover:bg-white/20 transition-all duration-300 backdrop-blur-md rounded-lg p-3 justify-center flex items-center gap-2 w-[90%]">
               <Image
+              unoptimized
                 src="/gif1.gif"
                 alt="gif1"
                 width={80}
@@ -61,9 +76,10 @@ export default function Home() {
               
               window.location.href = "tel:+918100364748";
             }}
-            className="bg-white hover:bg-white/20 transition-all duration-300 backdrop-blur-md rounded-lg p-3 flex items-center gap-2 w-[90%]">
+            className="bg-white hover:bg-white/20 transition-all duration-300 backdrop-blur-md rounded-lg p-3 flex items-center justify-center gap-2 w-[90%]">
               <p>Call</p>
               <Image
+              unoptimized
                 src="/gif2.gif"
                 alt="gif2"
                 width={80}
@@ -77,8 +93,9 @@ export default function Home() {
               
               window.location.href = "mailto:ventureacademy.contact@gmail.com";
             }}
-            className="bg-white hover:bg-white/20 transition-all duration-300 backdrop-blur-md rounded-lg p-3 flex items-center gap-2 w-[90%]">
+            className="bg-white hover:bg-white/20 transition-all duration-300 backdrop-blur-md rounded-lg p-3 justify-center flex items-center gap-2 w-[90%]">
               <Image
+              unoptimized
                 src="/gif3.gif"
                 alt="gif3"
                 width={80}
@@ -92,9 +109,10 @@ export default function Home() {
               
               window.location.href = "https://wa.me/918100364748";
             }}
-            className="bg-white hover:bg-white/20 transition-all duration-300 backdrop-blur-md rounded-lg p-3 flex items-center gap-2 w-[90%]">
+            className="bg-white hover:bg-white/20 transition-all duration-300 backdrop-blur-md rounded-lg p-3 justify-center flex items-center gap-2 w-[90%]">
               <p>Whatsapp</p>
               <Image
+              unoptimized
                 src="/gif4.gif"
                 alt="gif4"
                 width={80}
@@ -105,6 +123,6 @@ export default function Home() {
           </div>
         </div>
       </main>
-    </div>
+    </div>}</>
   );
 }

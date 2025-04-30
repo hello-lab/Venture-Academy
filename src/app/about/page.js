@@ -2,9 +2,12 @@
 
 import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
-import { useState, useEffect, useRef, use } from "react";
+import { useState, useEffect, useRef, use, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from 'next/dynamic';
+import Spinner from "../lib/loading";
+import Nspinner from "../lib/nloading";
+
 import Globe from "../proejctile/page";
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
@@ -17,9 +20,54 @@ export default function Home() {
   const [color, setColor] = useState("#3da557");
   const [color1, setColor1] = useState("#e3e98a");
   const [windowWidth, setWindowWidth] = useState(0);
-  const [items,setItems] =  useState({name:"",img:null,bgimage:null, desc:``,class:"", color:"", books:[{} ]})
+  const [items,setItems] =  useState({name:"",img:null,bgimage:null, desc:``,class:"", color:"rgb(0,0,0)", books:[{} ]})
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
+  const targetRef = useRef(null);
+  const [showGif, setShowGif] = useState(false);
+  const [isFullyLoaded, setIsFullyLoaded] = useState(false);  
+  useEffect(() => {
+    // Check if already loaded (could happen on fast connections)
+    if (document.readyState === "complete") {
+      setIsFullyLoaded(true);
+    } else {
+      window.addEventListener("load", () => {
+        setIsFullyLoaded(true);
+      });
+    }
+  }, []);
+
+
+
+
+
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting) {
+          // Show the GIF
+          setShowGif(true);
+
+          // Hide it after 2.5s
+          setTimeout(() => {
+            setShowGif(false);
+          }, 2500);
+        }
+      },
+      { threshold: 0.5 } // Adjust how much of the element is visible before triggering
+    );
+
+    if (targetRef.current) {
+      observer.observe(targetRef.current);
+    }
+
+    return () => {
+      if (targetRef.current) observer.unobserve(targetRef.current);
+    };
+  }, []);
+ 
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -459,7 +507,7 @@ export default function Home() {
     if (chosen === id) {
       setChosen(null);
       setPositions({});
-      setItems({name:"",img:null,bgimage:null, desc:``,class:"", color:"", books:[{} ]})
+      setItems({name:"",img:null,bgimage:null, desc:``,class:"", color:"rgb(0,0,0)", books:[]})
       console.log("c", chosen);
       return;
     }
@@ -481,14 +529,16 @@ let int
     const handleScroll = () => {
       const scrollTop = scrollableRef.current.scrollTop;
       console.log("Scroll distance:", scrollTop / elent.current.scrollHeight);
+      //if (scrollTop / elent.current.scrollHeight > 2) {
+       
+      
     };
-   int= setInterval(randomColor,500)
+    //int= setInterval(randomColor,1000)
+     
     const scrollableElement = scrollableRef.current;
-    scrollableElement.addEventListener("scroll", handleScroll);
+  //  scrollableElement.addEventListener("scroll", handleScroll);
 
-    return () => {
-      scrollableElement.removeEventListener("scroll", handleScroll);
-    };
+  return () => clearInterval(int); 
   }, []);
   const profiles = [
     { name: "Physics", img: "/profile2.png", color: "rgb(127, 199, 127)" },
@@ -498,13 +548,16 @@ let int
     { name: "Accountancy & Business ", img: "/profile7.png", color: "rgb(186, 255, 255)" },
   ];
   return (
+  <> {isFullyLoaded?
+    
     <div
       ref={scrollableRef}
-      className="relative flex flex-col font-[family-name:var(--chonk)] overflow-x-hidden smooth-scroll snap-y snap-mandatory overflow-y-scroll h-screen"
+      
+      className="relative flex flex-col font-[family-name:var(--chonk)] overflow-x-hidden smooth-scroll snap-y snap-mandatory overflow-y-scroll h-[100dvh]"
     >
       {/* Section 1
       <div
-        ref={elent}
+       
         className="relative z-10 min-h-screen w-full p-5 snap-start"
       >
         <video
@@ -541,7 +594,7 @@ let int
       </div> */}
 
       {/* Section 2 */}
-      <div className="relative z-10 min-h-[100dvh]  w-full p-5 bg-[#FAC9C9] snap-start hide-scrollbar">
+      <div  ref={elent} className="relative z-10 min-h-[100dvh] sm:min-h-[100dvh] w-full p-5 bg-[black] snap-start hide-scrollbar">
         {" "}
         <video
           autoPlay
@@ -577,7 +630,7 @@ let int
                   
   color: 'rgb(255, 255, 255)',
   justifyContent: 'center' }}
-                      className="text-5xl font-bold text-left"
+                      className="sm:text-5xl text-4xl font-bold text-left"
                   >
                      WE EMPOWER YOU TO TURN YOUR IDEAS INTO 
                     <span > VENTURES, </span>
@@ -601,7 +654,7 @@ let int
               
   color: 'rgba(255, 255, 255, 0)',
   justifyContent: 'center' }}
-                      className="text-5xl font-bold text-left"
+                      className="sm:text-5xl text-4xl font-bold text-left"
                   >
                      WE EMPOWER YOU TO TURN YOUR IDEAS INTO 
                     <span style={{ color: "rgb(238, 80, 80)" }} > VENTURES, </span>
@@ -622,10 +675,10 @@ let int
         >
           <source src="/chem.mp4" type="video/mp4" />
         </video>*/}
-      <div className="relative z-10 min-h-[100dvh]  w-full  bg-[#FAC9C9] snap-start hide-scrollbar">
+      <div className="relative z-10 min-h-[100dvh]  w-full  bg-[black] snap-start hide-scrollbar">
         {" "}
-         <div className="absolute h-[100dvh] w-[100dvw] z-10"> <Globe /> </div>
-        <main className="flex flex-col gap-[32px] items-center sm:items-start">
+         <div className="absolute h-[100dvh] w-[100dvw] z-11"> <Globe /> </div>
+        <main className="flex flex-col gap-[32px]  sm:items-start">
         
           <div>
          
@@ -636,12 +689,12 @@ let int
               viewport={{ once: false, amount: 0.1 }}
               className="absolute left-[0] top-[0] z-10 w-full "
             >
-              <div className="w-[100vw] flex sm:justify-center  justify-start items-center   h-screen" >
-              <div className="max-w-[40vw]">
+              <div className="w-[100vw] flex sm:justify-center  justify-start    h-screen" >
+              <div className=" ">
                   {" "}
                   <h1
                     style={{ color: "rgb(238, 80, 80)" }}
-                    className="text-5xl font-bold text-left"
+                    className="text-5xl font-bold text-left sm:text-center"
                   >
                     LEARNING ANYWHERE, VENTURING EVERYWHERE{" "}
                   </h1>
@@ -655,12 +708,12 @@ let int
               viewport={{ once: false, amount: 0.1 }}
               className="absolute left-[0] top-[-0vh] z-10 w-full "
             >
-              <div className="w-[100vw] flex sm:justify-center  justify-start items-center   h-screen" >
-              <div className="max-w-[40vw]">
+              <div className="w-[100vw] flex sm:justify-center  justify-start   h-screen" >
+              <div className="">
                   {" "}
                   <h1
                     style={{ color: "rgba(255, 255, 255, 0)" }}
-                    className="text-5xl  font-bold text-center sm:text-left"
+                    className="text-5xl  font-bold sm:text-center text-left"
                   >
                     LEARNING ANYWHERE,{" "}
                     <span style={{ color: "rgb(255, 255, 255)" }}>
@@ -680,7 +733,7 @@ let int
       {/* Section 4 */}
       <div
         className="relative z-10 min-h-[100dvh]  w-full p-5 bg-[#1f1f1f] snap-start hide-scrollbar"
-       
+        ref={targetRef}
        
         style={{
           backgroundImage: isSmallScreen ? `url(${items.img})` : `url(/${items.bgimage})`,
@@ -688,6 +741,16 @@ let int
           backgroundPosition: "center",
         }}
       >
+     <motion.div
+              initial={{ display: 'block' }}
+              whileInView={{ display: 'none'}}
+              transition={{ duration: 3 }}
+              viewport={{ once: true, amount: 0.1 }}
+              className="z-80  w-full h-full "
+            >
+
+              <Nspinner/>
+            </motion.div>
         <div
             className="absolute inset-0 w-full h-full bg-black opacity-60 top-0"
         ></div>
@@ -700,7 +763,7 @@ let int
             height={48}
             priority
           />
-          <div  style={{ display: !chosen ? "none" : "block" }} className="absolute min-h-screen flex flex-col items-center justify-center  text-white">
+          <Suspense fallback={<Nspinner/>}><div  style={{ display: !chosen ? "none" : "block" }} className="absolute min-h-screen flex flex-col items-center justify-center  text-white">
             <div className="w-[100vw] flex  items-center h-screen">
               <div className=" absolute ">
                 <div className=" relative left-[10dvw] sm:w-[30dvw] w-[90vw]   ">
@@ -755,7 +818,8 @@ let int
                       }}
                       className="flex gap-4"
                     >
-                      {items.books.map((item) => (
+                      {items.books.length>1? items.books.map((item) => (
+                        console.log("item",item),
                         <motion.div
                           key={item.id}
                           className="min-w-[160] h-[220] bg-gray-800 rounded-2xl overflow-hidden relative cursor-pointer"
@@ -763,7 +827,7 @@ let int
                           transition={{ type: "spring", stiffness: 300 }}
                         >
                           <img
-                            src={item.image}
+                            src={item.image||null}
                             alt={item.title}
                             draggable="false"
                             className="w-full h-full object-cover cursor-pointer"
@@ -772,7 +836,9 @@ let int
                             {item.title}
                           </div>
                         </motion.div>
-                      ))}
+                      )):<></>
+                    
+                    }
                     </motion.div>
                   </motion.div>
                 </div>
@@ -783,7 +849,7 @@ let int
               >
                {isSmallScreen?<></> :<Image
                   className="rounded-xl"
-                  src={items.img}
+                  src={items.img||null}
                   alt="Next.js logo"
                   width={300}
                   height={48}
@@ -791,7 +857,7 @@ let int
                 />}
               </div>
             </div>
-          </div>
+          </div></Suspense>
 
 
 
@@ -841,7 +907,7 @@ let int
                         }}
                       >
                         <Image
-                          src={item.img}
+                          src={item.img||null}
                           alt={item.name}
                           style={{ backgroundColor: item.color }}
                           width={160}
@@ -873,9 +939,8 @@ let int
 <div className="relative z-10 min-h-[100dvh] w-full p-5 bg-[#0d0c0d] snap-start hide-scrollbar">
   <main className="flex flex-col gap-[32px] items-center justify-center h-full">
     <div className="w-full flex justify-center">
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+      <button
+       
         style={{backgroundColor: color, borderColor: color1 , border:"4px solid white" , color:color1}}
         className="px-16 py-8 rounded-xl  text-4xl overflow-hidden group w-3/4"
         onClick={() => {
@@ -884,9 +949,9 @@ let int
         }
         }
       >
-        <span className="relative z-10" style={{ color:color1}}>Join Us Now</span>
+        <span className="relative z-10" >Join Us Now</span>
         <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      </motion.button>
+      </button>
     </div>
   </main>
 </div>
@@ -894,6 +959,6 @@ let int
 {/* Footer */}
 
      
-    </div>
+    </div>:<><Spinner/> </>}</>
   );
 }

@@ -2,8 +2,20 @@
 import { useEffect, useState } from "react";
 import { useRef } from "react";
 import Image from "next/image";
-
+import Spinner from "../lib/loading";
 export default function Home() {
+    const [isFullyLoaded, setIsFullyLoaded] = useState(false);  
+    useEffect(() => {
+      // Check if already loaded (could happen on fast connections)
+      if (document.readyState === "complete") {
+        setIsFullyLoaded(true);
+      } else {
+        window.addEventListener("load", () => {
+          setIsFullyLoaded(true);
+        });
+      }
+    }, []);
+  
   const notices = [
     {
       id: 1,
@@ -24,7 +36,7 @@ export default function Home() {
   };
 
   return (
- 
+    <> {!isFullyLoaded?<Spinner/>:
           <div
           
             className="relative z-10 min-h-screen w-full p-5 snap-start"
@@ -114,6 +126,6 @@ export default function Home() {
                  </div>
             </div>
             </main>
-          </div>
+          </div>}</>
   );
 }

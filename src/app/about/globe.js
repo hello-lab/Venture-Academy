@@ -205,7 +205,7 @@ export function World(props) {
       <Globe {...props} />
       <OrbitControls
         enablePan={false}
-        enableZoom={false}
+        enableZoom={true}
         minDistance={cameraZ}
         maxDistance={cameraZ}
         autoRotateSpeed={5}
